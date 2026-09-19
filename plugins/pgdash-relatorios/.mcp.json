@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "PGDash": {
+      "type": "http",
+      "url": "https://pgdash.gabrielfelizardo.com/api/mcp"
+    }
+  }
+}

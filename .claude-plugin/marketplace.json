@@ -1,0 +1,13 @@
+{
+  "name": "pgdash",
+  "owner": { "name": "PGDash · Gabriel Felizardo" },
+  "metadata": { "description": "Plugins do PGDash para o Claude." },
+  "plugins": [
+    {
+      "name": "pgdash-relatorios",
+      "source": "./plugins/pgdash-relatorios",
+      "description": "Relatório diário e Relatório semanal da conta do Mercado Livre, gerados a partir do PGDash, com histórico e agendados para as 7h.",
+      "version": "0.1.1"
+    }
+  ]
+}
