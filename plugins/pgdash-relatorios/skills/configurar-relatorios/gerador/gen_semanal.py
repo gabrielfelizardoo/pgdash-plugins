@@ -19,6 +19,14 @@ def dl(a,b,txt='vs semana anterior',inv=False,pp=False):
     s=('▲ ' if v>0 else '▼ ')+(br(abs(v),1)+' pp' if pp else br(abs(v))+'%')
     return f'<span class="{"up" if good else "down"}">{s}</span> {txt}'
 def ds(s): y,m,d=s.split('-');return f'{d}/{m}'
+import re as _re
+def _txt(h,n=240):
+    t=_re.sub(r'<[^>]+>','',h or '').replace('&nbsp;',' ').strip()
+    t=_re.sub(r'\s+',' ',t)
+    return t[:n]
+def _acao(h): 
+    t=_txt(h,160);return t.split('.')[0].strip()+'.' if '.' in t else t
+
 DOW=['segunda','terça','quarta','quinta','sexta','sábado','domingo'];DOWc=[x.capitalize() for x in DOW]
 MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']
 a0=dt.date.fromisoformat(D['semana_ini']);a1=dt.date.fromisoformat(D['semana_fim'])
@@ -158,6 +166,19 @@ if seo:
 sec.append('<section class="card actions"><h2>Decisões da semana</h2><ol>'+''.join(f'<li>{a}</li>' for a in T['acoes'])+'</ol></section>')
 sy=D.get('sync',{})
 foot=f'<footer><span>Fonte: PGDash{" · AccuWeather" if wx else ""}{" · INMET" if wx and wx.get("alerta") else ""}</span><span>Vendas sincronizadas há {sy.get("vendas","?")} min · estoque há {sy.get("estoque","?")} min · Ads há {sy.get("ads","?")} min</span></footer>'
+
+# memória: resumo compacto da semana, lido pela próxima rodada
+_sub=sorted([x for x in prod if (x[2] or 0)>0 and x[1]>x[2]],key=lambda x:-(x[1]-x[2]))[:3]
+_cai=sorted([x for x in prod if (x[2] or 0)>0 and x[1]<x[2]],key=lambda x:(x[1]-x[2]))[:3]
+MEM=dict(fat=S['fat'],ped=S.get('ped'),ticket=S.get('ticket'),mpre=S.get('mpre'),ads=S.get('ads'),
+ conv=S.get('conv'),vis=S.get('vis'),fat_ant=A.get('fat'),
+ roas=(ad or {}).get('roas'),tacos=(ad or {}).get('tacos'),
+ subiu=[x[0] for x in _sub],caiu=[x[0] for x in _cai],
+ camp_ruins=[c[0] for c in camp if c[5]>0 and (c[7] is None or c[7]<BE)][:6],
+ repor=[x[0] for x in rep][:8],rup_n=r.get('n',0),perda=r.get('perda'),
+ acoes=[_acao(a) for a in T.get('acoes',[])],
+ risco=_txt(T['resumo'][2]) if len(T.get('resumo',[]))>2 else None,
+ clima=(wx or {}).get('tipo'))
 inner=hdr+''.join(sec)+foot
 body='<div id="tip"></div><div class="wrap"><nav class="hist" id="hist" hidden></nav><div id="rel">'+inner+'</div></div>'
 J=dict(projHoje=f'até {a1.day}/{a1.month}',comp=comp,compBig='Esta semana',w8=w8,m4=m4,dias=dias,rank=rk if prod else [],heat=heat,
@@ -172,5 +193,5 @@ out=f'<title>Relatório semanal {D["conta"]}</title><meta name="color-scheme" co
 open(OUT,'w').write(out)
 od=os.path.dirname(os.path.abspath(OUT))
 json.dump(dict(data=ED['data'],rotulo=ED['rotulo'],fat=ED['fat'],body=inner,D=J),open(os.path.join(od,'edicao.json'),'w'),ensure_ascii=False)
-json.dump(dict(data=ED['data'],rotulo=ED['rotulo'],fat=ED['fat']),open(os.path.join(od,'indice.json'),'w'),ensure_ascii=False)
+json.dump(dict(data=ED['data'],rotulo=ED['rotulo'],fat=ED['fat'],mem=MEM),open(os.path.join(od,'indice.json'),'w'),ensure_ascii=False)
 print('ok',OUT,'| edicao.json e indice.json em',od)
