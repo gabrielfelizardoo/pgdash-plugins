@@ -17,7 +17,9 @@ O gerador fica anexado ao próprio artefato do relatório (URL informada pela ta
 
 O resultado informa a pasta onde os arquivos foram salvos (dentro do scratchpad, terminando em `/gerador`). Chame essa pasta de `REL` e trabalhe sempre dentro dela: é o único lugar de onde o Artifact aceita publicar. Não reescreva nenhum desses arquivos à mão.
 
-## Passo 2 — Coletar (até 3 chamadas, nada além disso)
+## Passo 2 — Coletar (até 4 chamadas, nada além disso)
+
+0. **Memória** — `ArtifactData` com `action: "query"`, `url` = URL do artefato, `collection` = `indice` e `query` = `{"order_by": {"field": "data", "direction": "desc"}, "limit": 7}`. Devolve as 7 últimas edições, cada uma com o bloco `mem`: números do dia, produtos zerados e quase zerando, campanhas fracas, as ações que você recomendou e o risco que apontou. É a sua memória — use no Passo 4. Se falhar ou vier vazia, siga sem ela; nunca pare por isso e nunca invente o que "foi dito ontem".
 
 1. `PGDash.relatorio_diario` com `data` = ontem no fuso America/Sao_Paulo e `limite_skus` = 40. Se falhar, avise o cliente em uma frase e pare.
 2. `PGDash.consultar_ads` com `granularidade` = `por_dia`, `de` = 13 dias antes de ontem, `ate` = ontem (só para a linha de CTR de 14 dias).
@@ -74,6 +76,15 @@ Dia das Mães (2º domingo de maio) · Dia dos Namorados (12/06) · Dia dos Pais
 - `acoes`: 3 ações em ordem de impacto, cada uma começando com `<b>verbo + objeto</b>` e com o número que a justifica.
 
 Regras: nomes de produto, nunca SKU; sem jargão ("prazo de reposição", "acaba em", "venda por dia"); nunca "D-1/D-7"; números no formato brasileiro (R$ 1,9 mil · 7,7%); frases curtas.
+
+**Usar a memória (obrigatório).** As edições anteriores entram nos textos assim:
+
+- **Não repita uma ação.** Se a mesma recomendação já está nas `acoes` de edições anteriores, diga há quantos dias ela está aberta e o que piorou desde então ("terceiro dia pedindo o mesmo pedido; a perda acumulada já passa de R$ 7 mil"). A partir de 3 edições seguidas a ação sobe de tom: "revisar" vira "pausar", "cobrar a entrega" vira "trocar o prazo com o fornecedor".
+- **Cobre o risco da véspera.** O `risco` da última edição é uma previsão. Diga no parágrafo 1 ou 2 se ela se confirmou ("o Guarda-chuva Rosa zerou, como o relatório de ontem apontava") ou se passou sem acontecer. Não repita o mesmo risco como novidade.
+- **Sequências.** Use os `fat` das edições para dizer o que está em curso ("quarto dia seguido acima de R$ 10 mil", "terceira queda seguida") em vez de tratar o dia como um evento solto.
+- **Campanha reincidente.** Campanha em `camp_ruins` por 3 edições seguidas não é alerta, é decisão: pause, com o total gasto nesses dias.
+- **Produto que voltou.** Um nome que sai de `zerados` explica parte da alta do dia; um que entra pela primeira vez merece o parágrafo 2.
+- A memória compara, nunca substitui o dado de hoje: todo número vindo dela aparece ao lado do número atual. E nunca escreva "histórico", "memória" ou "edição anterior" — escreva como quem acompanha a conta todo dia ("desde segunda", "pelo terceiro dia", "ontem o relatório já avisava").
 
 ## Passo 5 — Gerar e publicar
 
