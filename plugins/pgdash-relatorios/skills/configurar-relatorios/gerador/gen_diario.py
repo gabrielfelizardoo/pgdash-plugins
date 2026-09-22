@@ -17,8 +17,11 @@ def _txt(h,n=240):
     t=_re.sub(r'<[^>]+>','',h or '').replace('&nbsp;',' ').strip()
     t=_re.sub(r'\s+',' ',t)
     return t[:n]
-def _acao(h): 
-    t=_txt(h,160);return t.split('.')[0].strip()+'.' if '.' in t else t
+def _acao(h):
+    b=_re.search(r'<b[^>]*>(.*?)</b>',h or '')
+    if b: return _txt(b.group(1),160).rstrip(' .:—-')+'.'
+    t=_txt(h,160);p=_re.split(r'(?<!\d)\.(?!\d)',t,1)
+    return (p[0].strip()+'.') if len(p)>1 else t
 
 DOW=['segunda','terça','quarta','quinta','sexta','sábado','domingo'];DOWc=[x.capitalize() for x in DOW]
 MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']
