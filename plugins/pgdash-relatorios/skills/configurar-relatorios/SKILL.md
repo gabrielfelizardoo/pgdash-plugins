@@ -93,6 +93,7 @@ Parâmetros desta conta:
 - clima: <auto|nunca>
 - cidade do clima: <cidade>, locationKey <chave>   (omita a linha sem clima)
 - ponto de equilíbrio de ROAS: <BE>
+<só no semanal:> - url do relatório diário: <URL_D>
 <só no semanal:> A semana é a de segunda a domingo que terminou ontem.
 
 Não faça perguntas: rode sem interação. Se alguma etapa falhar, envie ao cliente uma única linha dizendo o que falhou.
