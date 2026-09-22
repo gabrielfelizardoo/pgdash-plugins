@@ -17,6 +17,8 @@ Datas: `HOJE` = hoje em America/Sao_Paulo. `FIM` = o domingo mais recente antes 
 
 ## Passo 2 — Coletar (em paralelo, nada além disso)
 
+0. **Memória** — `ArtifactData` com `action: "query"`, `url` = URL do artefato do semanal, `collection` = `indice` e `query` = `{"order_by": {"field": "data", "direction": "desc"}, "limit": 8}`: as 8 últimas semanas, cada uma com o bloco `mem` (números, quem subiu e caiu, campanhas fracas, reposição, ações e o risco apontado). Se a tarefa informar também a URL do Relatório diário, repita a consulta no índice dele com `limit` 7 — são as decisões já tomadas durante a semana. Se falhar ou vier vazia, siga sem ela e nunca invente o que foi dito antes.
+
 1. `PGDash.relatorio_diario` com `data` = FIM e `limite_skus` = 40 (estoque de hoje, projeção, parâmetros, categorias, sincronização, nome da conta). Se falhar, avise em uma frase e pare.
 2. `PGDash.consultar_overview` com `de` = INI, `ate` = FIM, `comparar_com` = `periodo_anterior`.
 3. `PGDash.consultar_vendas` com `de` = FIM − 55, `ate` = FIM, `serie` = `diaria` (8 semanas).
@@ -63,6 +65,15 @@ Nome amigável: `nome_curto` da chamada 1 quando o SKU estiver lá; senão reduz
 - `acoes` ("Decisões da semana"): 3 a 5, em ordem de impacto, cada uma começando com `<b>verbo + objeto.</b>` e com o número que a justifica.
 
 Regras: nomes de produto, nunca SKU; números no formato brasileiro (R$ 64,2 mil · 7,4% · −1,1 pp); frases curtas; nada de jargão.
+
+**Usar a memória (obrigatório).** As semanas anteriores entram nos textos assim:
+
+- **Não repita uma decisão.** Uma ação que já apareceu nas `acoes` das semanas anteriores volta com o tempo aberto e o custo acumulado ("terceira semana com o mesmo pedido em aberto"), e sobe de tom depois da segunda repetição.
+- **Cobre o risco da semana passada.** Diga se o `risco` apontado se confirmou ou não, logo no primeiro ou segundo parágrafo.
+- **Sequências.** Com os `fat` das 8 semanas, diga se a semana continua uma tendência ou quebra ("terceira semana seguida de alta"), em vez de comparar só com a anterior.
+- **Produto reincidente.** Um nome que aparece em `caiu` duas semanas seguidas é queda estrutural, não oscilação; um que volta de `repor` mostra se a compra foi feita.
+- **Diários da semana.** Quando eles vierem, use-os para saber o que já foi recomendado durante a semana e não repetir; a semana fecha o que os dias abriram.
+- A memória compara, nunca substitui o dado da semana. E nunca escreva "histórico", "memória" ou "edição anterior" — escreva como quem acompanha a conta toda semana.
 
 ## Passo 5 — Gerar, publicar e guardar
 
