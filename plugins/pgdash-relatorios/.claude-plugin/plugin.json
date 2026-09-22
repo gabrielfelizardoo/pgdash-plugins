@@ -1,6 +1,6 @@
 {
   "name": "pgdash-relatorios",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Relatório diário e Relatório semanal da conta do Mercado Livre, gerados a partir do PGDash, publicados numa página com histórico e agendados para as 7h.",
   "author": { "name": "PGDash · Gabriel Felizardo" },
   "homepage": "https://pgdash.gabrielfelizardo.com",
