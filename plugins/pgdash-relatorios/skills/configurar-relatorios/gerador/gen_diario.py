@@ -12,6 +12,14 @@ def k(v):
 def pct(v): return ('▲ ' if v>0 else '▼ ')+br(abs(v))+'%'
 def cls(v): return 'up' if v>0 else 'down'
 def ds(s): y,m,d=s.split('-');return f'{d}/{m}'
+import re as _re
+def _txt(h,n=240):
+    t=_re.sub(r'<[^>]+>','',h or '').replace('&nbsp;',' ').strip()
+    t=_re.sub(r'\s+',' ',t)
+    return t[:n]
+def _acao(h): 
+    t=_txt(h,160);return t.split('.')[0].strip()+'.' if '.' in t else t
+
 DOW=['segunda','terça','quarta','quinta','sexta','sábado','domingo'];DOWc=[x.capitalize() for x in DOW]
 MES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro']
 d=dt.date.fromisoformat(D['data']);wd=d.weekday();dowp=DOW[wd]+'s'
@@ -131,6 +139,18 @@ if seo:
 sec.append('<section class="card actions"><h2>O que fazer hoje</h2><ol>'+''.join(f'<li>{a}</li>' for a in T['acoes'])+'</ol></section>')
 sy=D.get('sync',{})
 foot=f'<footer><span>Fonte: PGDash{" · AccuWeather" if wx else ""}{" · INMET" if wx and wx.get("alerta") else ""}</span><span>Vendas sincronizadas há {sy.get("vendas","?")} min · estoque há {sy.get("estoque","?")} min · Ads há {sy.get("ads","?")} min</span></footer>'
+
+# memória: resumo compacto da edição, lido pela próxima rodada
+MEM=dict(fat=dia['fat'],ped=dia['ped'],mpos=dia['mpos'],ads=dia['ads'],roas=round(roas,1),
+ conv=f['conv'],vis=f['vis'],vs_d1=dia['vs_d1'],vs_m7=dia['vs_m7'],vs_med=dia.get('vs_med'),
+ meta_pct=p.get('pct_meta'),rup_n=r.get('n',0),perda=r.get('perda'),
+ zerados=[s[0] for s in skus if s[1]==0][:8],
+ quase=[s[0] for s in skus if s[1]>0 and s[5]<=3][:8],
+ camp_top=(camp[0][0] if camp else None),
+ camp_ruins=[c[0] for c in camp if c[5]>0 and (c[7] is None or c[7]<BE)][:6],
+ acoes=[_acao(a) for a in T.get('acoes',[])],
+ risco=_txt(T['resumo'][2]) if len(T.get('resumo',[]))>2 else None,
+ clima=(wx or {}).get('tipo'),evento=(ev[0]['nome']+' '+ds(ev[0]['data']) if ev else None))
 inner=hdr+''.join(sec)+foot
 body='<div id="tip"></div><div class="wrap"><nav class="hist" id="hist" hidden></nav><div id="rel">'+inner+'</div></div>'
 J=dict(serie=serie,comp=comp,lost=lost,ctr=ctr14,ws=[[s[0],s[1],s[5]] for s in withstock],proj=[p['mtd']/1000,p['c3']/1000,(p.get('sem_rup') or p['c3'])/1000,(meta or 0)/1000],
@@ -143,5 +163,5 @@ out=f'<title>Relatório diário {D["conta"]}</title><meta name="color-scheme" co
 open(OUT,'w').write(out)
 od=os.path.dirname(os.path.abspath(OUT))
 json.dump(dict(data=ED['data'],rotulo=ED['rotulo'],fat=ED['fat'],body=inner,D=J),open(os.path.join(od,'edicao.json'),'w'),ensure_ascii=False)
-json.dump(dict(data=ED['data'],rotulo=ED['rotulo'],fat=ED['fat']),open(os.path.join(od,'indice.json'),'w'),ensure_ascii=False)
+json.dump(dict(data=ED['data'],rotulo=ED['rotulo'],fat=ED['fat'],mem=MEM),open(os.path.join(od,'indice.json'),'w'),ensure_ascii=False)
 print('ok',OUT,'| edicao.json e indice.json em',od)
